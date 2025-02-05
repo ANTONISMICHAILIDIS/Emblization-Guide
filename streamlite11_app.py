@@ -1,152 +1,240 @@
 import streamlit as st
 import pandas as pd
 
-# App title and subtitle
+# =============================================================================
+# Title and Header
+# =============================================================================
 st.title("Embolization Guide")
 st.markdown("<p style='font-size:12px'>Created by Michailidis A. for free use</p>", unsafe_allow_html=True)
 
-# Sidebar: Let the user choose the organ, pathology, and emergency status.
+# =============================================================================
+# Sidebar: Organ and Pathology Selection
+# =============================================================================
 st.sidebar.header("Embolization Parameters")
-organ = st.sidebar.selectbox("Select the organ:", 
-                             ["Liver", "Kidney", "Lung", "Prostate", "Uterus", "Bone/MSK", "Cerebrovascular"])
-pathology = st.sidebar.selectbox("Select the pathology:", 
-                                 ["Tumor (Malignant)", "Tumor (Benign)", "Hemorrhage", "Other"])
-emergency = st.sidebar.checkbox("Emergency Case?")
 
-st.header("Embolization Instructions")
+organ_options = [
+    "Liver",
+    "Kidney",
+    "Lung",
+    "Gastrointestinal (GI)",
+    "Genitourinary (Prostate)",
+    "Uterus",
+    "Musculoskeletal (MSK)",
+    "Peripheral Vascular"
+]
+organ = st.sidebar.selectbox("Select the organ/system for embolization:", organ_options)
 
+# Define pathology options based on the selected organ
+if organ == "Liver":
+    pathology_options = [
+        "Malignant Tumors (HCC, Liver Metastases)",
+        "Benign Tumors (Hepatic Adenoma, Hemangioma)"
+    ]
+elif organ == "Kidney":
+    pathology_options = [
+        "Renal Tumors (RCC, Angiomyolipoma)",
+        "Renal Hemorrhage (Trauma, Iatrogenic, Postoperative)"
+    ]
+elif organ == "Lung":
+    pathology_options = ["Hemoptysis (Massive or Chronic)"]
+elif organ == "Gastrointestinal (GI)":
+    pathology_options = ["GI Bleeding (Peptic Ulcer, Variceal, Tumor-Related)"]
+elif organ == "Genitourinary (Prostate)":
+    pathology_options = ["Prostate Artery Embolization (PAE) for BPH"]
+elif organ == "Uterus":
+    pathology_options = ["Fibroid Embolization (Uterine Artery Embolization)"]
+elif organ == "Musculoskeletal (MSK)":
+    pathology_options = ["Bone Tumors (Osteoid Osteoma, Metastases)"]
+elif organ == "Peripheral Vascular":
+    pathology_options = ["Arteriovenous Malformations (AVMs)"]
+else:
+    pathology_options = ["Other"]
+
+pathology = st.sidebar.selectbox("Select the pathology/indication:", pathology_options)
+emergency = st.sidebar.checkbox("Is this an emergency case?")
+
+# =============================================================================
+# Instruction Generation Function
+# =============================================================================
 def get_instructions(organ, pathology, emergency):
     instructions = ""
+    
+    # -------------------------------
+    # 1. Liver Embolization
+    # -------------------------------
     if organ == "Liver":
-        if pathology == "Tumor (Malignant)":
-            instructions += (
-                "Protocol: Use Microwave Ablation (MWA) or Radiofrequency Ablation (RFA) depending on lesion size.\n\n"
-                "• **MWA Example:** 40 watt for 5 minutes to produce an ablation zone of approximately 3.6 x 2.9 x 2.0 cm, "
-                "ensuring a 1-cm safety margin.\n\n"
-                "• **Embolic Material:** Consider using drug-eluting beads for combined chemoembolization or PVA particles "
-                "when applicable.\n\n"
-                "• **Vessel Variations:** Be aware of hepatic arterial variants (e.g., replaced right hepatic artery) and "
-                "perform superselective catheterization.\n"
-            )
-        elif pathology == "Hemorrhage":
-            instructions += (
-                "Protocol: For hepatic hemorrhage, prioritize rapid temporary occlusion.\n\n"
-                "• **Embolic Material:** Gelfoam slurry (temporary) combined with PVA particles or coils for proximal occlusion.\n\n"
-                "• **Vessel Variations:** Confirm hepatic arterial anatomy using angiography to account for variations.\n"
-            )
-        else:
-            instructions += (
-                "For benign or other liver lesions, tailor the approach with lower energy settings and minimal safety margins.\n"
-            )
+        if pathology == "Malignant Tumors (HCC, Liver Metastases)":
+            instructions += "### Liver Embolization: Malignant Tumors (HCC, Liver Metastases)\n\n"
+            instructions += "**Primary Techniques:**\n"
+            instructions += "- Transarterial Chemoembolization (TACE)\n"
+            instructions += "- Transarterial Radioembolization (TARE/Y90)\n"
+            instructions += "- Bland Embolization (TAE)\n\n"
+            instructions += "**Embolic Agents:**\n"
+            instructions += "- Drug-Eluting Beads (DEB-TACE)\n"
+            instructions += "- Yttrium-90 Microspheres (for TARE)\n"
+            instructions += "- Polyvinyl Alcohol (PVA) Particles\n\n"
+            instructions += "**Catheter Selection:**\n"
+            instructions += "- Microcatheters (2.0–2.8 Fr) for superselective embolization\n"
+            instructions += "- 5–6 Fr guiding catheters for main access\n\n"
+            instructions += "**Vascular Access:**\n"
+            instructions += "- Common Femoral Artery (CFA) → Celiac Axis → Hepatic Artery\n"
+            instructions += "- Radial Artery access is an alternative option\n\n"
+            instructions += "**Medications:**\n"
+            instructions += "- Administer antibiotics to prevent postembolization syndrome\n"
+            instructions += "- IV analgesia and sedation are recommended\n\n"
+            instructions += "**Anatomical Variations:**\n"
+            instructions += "- Be alert for a replaced right hepatic artery originating from the Superior Mesenteric Artery (SMA)\n"
+            instructions += "- A replaced left hepatic artery may arise from the left gastric artery\n\n"
+            
+        elif pathology == "Benign Tumors (Hepatic Adenoma, Hemangioma)":
+            instructions += "### Liver Embolization: Benign Tumors (Hepatic Adenoma, Hemangioma)\n\n"
+            instructions += "**Techniques:**\n"
+            instructions += "- Superselective embolization is recommended\n\n"
+            instructions += "**Embolic Agents:**\n"
+            instructions += "- Microspheres (300–500 μm) for precise vessel occlusion\n"
+            instructions += "- Coils for occluding larger feeding arteries\n\n"
+            instructions += "**Emergency Considerations:**\n"
+            instructions += "- In cases of active bleeding, use Gelatin Sponge for temporary occlusion\n\n"
+    
+    # -------------------------------
+    # 2. Kidney (Renal) Embolization
+    # -------------------------------
     elif organ == "Kidney":
-        if pathology == "Tumor (Malignant)":
-            instructions += (
-                "Protocol: Consider RFA or MWA ensuring a 1-cm safety margin.\n\n"
-                "• **Embolic Material:** When used as part of a combined therapy, drug-eluting beads or PVA particles may be added.\n\n"
-                "• **Vessel Variations:** Check for accessory renal arteries; superselective catheterization is advised.\n"
-            )
-        elif pathology == "Hemorrhage":
-            instructions += (
-                "Protocol: For renal hemorrhage, use a combination of coil embolization for proximal control and particles for distal occlusion.\n\n"
-                "• **Embolic Material:** Coils combined with PVA particles are recommended.\n\n"
-                "• **Vessel Variations:** Renal vascular anatomy is variable; thorough angiographic evaluation is essential.\n"
-            )
-        else:
-            instructions += (
-                "For benign renal lesions (e.g., angiomyolipoma), consider cryoablation protocols if indicated or use a tailored embolization approach.\n"
-            )
+        if pathology == "Renal Tumors (RCC, Angiomyolipoma)":
+            instructions += "### Renal Embolization: Renal Tumors (RCC, Angiomyolipoma)\n\n"
+            instructions += "**Techniques:**\n"
+            instructions += "- Superselective Renal Artery Embolization\n\n"
+            instructions += "**Embolic Agents:**\n"
+            instructions += "- Microparticles (100–300 μm) to induce tumor ischemia\n"
+            instructions += "- Coils for occluding large feeding arteries\n\n"
+            instructions += "**Catheter Selection:**\n"
+            instructions += "- 5–6 Fr guiding catheter for renal artery access\n"
+            instructions += "- Microcatheters for superselective embolization\n\n"
+            instructions += "**Vascular Access:**\n"
+            instructions += "- Common Femoral Artery → Abdominal Aorta → Renal Artery\n\n"
+            instructions += "**Medications:**\n"
+            instructions += "- IV fluids periprocedurally to prevent contrast-induced nephropathy\n"
+            instructions += "- Pain management for post-embolization syndrome is recommended\n\n"
+            
+        elif pathology == "Renal Hemorrhage (Trauma, Iatrogenic, Postoperative)":
+            instructions += "### Renal Embolization: Renal Hemorrhage (Trauma, Iatrogenic, Postoperative)\n\n"
+            instructions += "**Embolic Agents:**\n"
+            instructions += "- Gelatin Sponge for temporary hemostasis\n"
+            instructions += "- Coils for permanent occlusion if needed\n\n"
+            instructions += "**Emergency Considerations:**\n"
+            instructions += "- Urgent embolization is required in cases of active renal hemorrhage\n\n"
+    
+    # -------------------------------
+    # 3. Lung (Pulmonary) Embolization
+    # -------------------------------
     elif organ == "Lung":
-        if pathology == "Tumor (Malignant)":
-            instructions += (
-                "Protocol: Use MWA or RFA under CT guidance to ablate the lesion.\n\n"
-                "• **Embolic Material:** Although primary treatment is ablation, adjunct particle embolization may be considered in select cases.\n\n"
-                "• **Vessel Variations:** Evaluate both pulmonary and bronchial arteries; note that bronchial arterial supply can vary.\n"
-            )
-        elif pathology == "Hemorrhage":
-            instructions += (
-                "Protocol: In pulmonary hemorrhage, rapid embolization is critical.\n\n"
-                "• **Embolic Material:** Fast-acting liquid agents such as n-Butyl Cyanoacrylate (nBCA) glue or Onyx® are options, "
-                "often in combination with coils.\n\n"
-                "• **Vessel Variations:** Assess both pulmonary and bronchial vascular contributions via high-resolution CT angiography.\n"
-            )
-        else:
-            instructions += (
-                "For benign lung lesions, treatment is highly case-specific. Consult multidisciplinary guidelines for detailed protocol.\n"
-            )
-    elif organ == "Prostate":
-        if pathology == "Tumor (Malignant)":
-            instructions += (
-                "Protocol: For prostate cancer, consider non-embolization modalities such as HIFU, cryoablation, or transurethral RFA.\n\n"
-                "• **Embolic Material:** Embolization is less common; focus on ablation for tumor control.\n\n"
-                "• **Vessel Variations:** Detailed mapping of prostatic arterial supply is required; microcatheters may be necessary.\n"
-            )
-        else:
-            instructions += (
-                "Protocol: For benign prostatic hyperplasia (BPH), perform prostatic artery embolization.\n\n"
-                "• **Embolic Material:** Use calibrated microspheres (100–300 microns) or PVA particles.\n\n"
-                "• **Vessel Variations:** Carefully identify prostatic arterial branches and their anastomoses with rectal or bladder arteries.\n"
-            )
+        instructions += "### Pulmonary Embolization: Hemoptysis (Massive or Chronic)\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Bronchial Artery Embolization (BAE)\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- PVA Particles (300–500 μm)\n"
+        instructions += "- Coils (especially for treating arteriovenous malformations)\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- 5–6 Fr guiding catheter for bronchial artery access\n"
+        instructions += "- Microcatheters for selective embolization\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Descending Thoracic Aorta → Bronchial Arteries\n\n"
+        instructions += "**Medications:**\n"
+        instructions += "- IV heparin may be used in cases of pulmonary AVM embolization\n\n"
+        instructions += "**Anatomical Variations:**\n"
+        instructions += "- Be aware of anomalous bronchial artery origins (e.g., arising from intercostal arteries)\n\n"
+    
+    # -------------------------------
+    # 4. Gastrointestinal (GI) Embolization
+    # -------------------------------
+    elif organ == "Gastrointestinal (GI)":
+        instructions += "### GI Embolization: GI Bleeding (Peptic Ulcer, Variceal, Tumor-Related)\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Superselective embolization is critical for controlling bleeding\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- Microcoils for precise arterial occlusion\n"
+        instructions += "- NBCA glue for rapid hemostasis when needed\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- Microcatheters (typically 2.5 Fr) for superselective embolization\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Celiac Axis → Left Gastric Artery\n\n"
+        instructions += "**Emergency Considerations:**\n"
+        instructions += "- In massive GI bleeding, immediate embolization is essential\n\n"
+    
+    # -------------------------------
+    # 5. Genitourinary (Prostate) Embolization
+    # -------------------------------
+    elif organ == "Genitourinary (Prostate)":
+        instructions += "### Prostate Artery Embolization (PAE) for BPH\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Bilateral embolization of the prostate arteries\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- Microparticles (100–300 μm) are used to induce ischemia in the prostatic tissue\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- 5 Fr guiding catheter for iliac access\n"
+        instructions += "- Microcatheters for selective embolization of the prostatic arteries\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Internal Iliac Artery → Prostatic Artery\n\n"
+        instructions += "**Anatomical Variations:**\n"
+        instructions += "- Expect four anatomical subtypes of prostatic arteries (Type I–IV) that may affect access and embolization technique\n\n"
+    
+    # -------------------------------
+    # 6. Uterine Artery Embolization (UAE)
+    # -------------------------------
     elif organ == "Uterus":
-        instructions += (
-            "Protocol: For uterine embolization (either for fibroids or postpartum hemorrhage), perform superselective catheterization "
-            "of the uterine arteries.\n\n"
-        )
-        if pathology == "Tumor (Benign)":
-            instructions += (
-                "• **Embolic Material:** Typically, tris-acryl gelatin microspheres (355–500 microns) or PVA particles are used.\n\n"
-            )
-        elif pathology == "Hemorrhage":
-            instructions += (
-                "• **Embolic Material:** For postpartum hemorrhage, temporary agents such as Gelfoam® are often preferred.\n\n"
-            )
-        instructions += (
-            "• **Vessel Variations:** Be mindful of uterine artery variants and possible ovarian artery collaterals; "
-            "pre-procedural imaging is essential.\n"
-        )
-    elif organ == "Bone/MSK":
-        instructions += (
-            "Protocol: For hypervascular bone tumors or chronic musculoskeletal pain, perform superselective embolization.\n\n"
-        )
-        if pathology == "Tumor (Malignant)":
-            instructions += (
-                "• **Embolic Material:** Consider using PVA particles or calibrated microspheres (100–300 microns), and add coils for larger feeding vessels if needed.\n\n"
-            )
-        else:
-            instructions += (
-                "• **Embolic Material:** For pain management, smaller particles (100–300 microns) are typically used to reduce blood flow to the area.\n\n"
-            )
-        instructions += (
-            "• **Vessel Variations:** Evaluate the arterial supply to the affected bone and surrounding soft tissues via pre-procedural imaging.\n"
-        )
-    elif organ == "Cerebrovascular":
-        instructions += (
-            "Protocol: For cerebrovascular lesions such as aneurysms, arteriovenous malformations (AVMs), or dural fistulas, "
-            "a combination of coils and liquid embolic agents is commonly used.\n\n"
-        )
-        if pathology == "Hemorrhage":
-            instructions += (
-                "• **Embolic Material:** Coils, Onyx®, or nBCA glue are options based on lesion complexity.\n\n"
-            )
-        else:
-            instructions += (
-                "• **Embolic Material:** For AVMs, Onyx® or Squid® is frequently used; coils may be added for proximal flow control.\n\n"
-            )
-        instructions += (
-            "• **Vessel Variations:** Given the highly variable cerebral vasculature, high-resolution angiography is mandatory to map the target vessels.\n"
-        )
-    else:
-        instructions += "Organ not recognized. Please select a valid option from the sidebar.\n"
-        
+        instructions += "### Uterine Artery Embolization: Fibroid Embolization\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Superselective embolization of the uterine arteries\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- Microparticles (300–500 μm) to infarct the fibroids\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- 5 Fr guiding catheter for internal iliac artery access\n"
+        instructions += "- Microcatheters for selective uterine artery embolization\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Internal Iliac Artery → Uterine Artery\n\n"
+    
+    # -------------------------------
+    # 7. Musculoskeletal (MSK) Embolization
+    # -------------------------------
+    elif organ == "Musculoskeletal (MSK)":
+        instructions += "### Musculoskeletal Embolization: Bone Tumors (Osteoid Osteoma, Metastases)\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Preoperative embolization to reduce tumor vascularity\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- Microparticles (100–300 μm) for tumor devascularization\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- Microcatheters for selective embolization of the tumor feeding artery\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Selective Tumor Feeding Artery\n\n"
+    
+    # -------------------------------
+    # 8. Peripheral Vascular Embolization
+    # -------------------------------
+    elif organ == "Peripheral Vascular":
+        instructions += "### Peripheral Vascular Embolization: Arteriovenous Malformations (AVMs)\n\n"
+        instructions += "**Techniques:**\n"
+        instructions += "- Superselective embolization is performed to occlude the AVM\n\n"
+        instructions += "**Embolic Agents:**\n"
+        instructions += "- NBCA glue for permanent occlusion of the AVM\n\n"
+        instructions += "**Catheter Selection:**\n"
+        instructions += "- Microcatheters are used for precise embolization\n\n"
+        instructions += "**Vascular Access:**\n"
+        instructions += "- Common Femoral Artery → Selective Target Vessel\n\n"
+    
+    # -------------------------------
+    # Emergency Adjustments (General)
+    # -------------------------------
     if emergency:
         instructions += "\n**Emergency Protocol Adjustments:**\n"
-        instructions += (
-            "- Prioritize rapid hemostasis.\n"
-            "- Consider fast-acting liquid embolics (e.g., nBCA glue) or coils for immediate vessel occlusion.\n"
-            "- Streamline the procedure by reducing imaging delays and ensuring quick access to required embolic materials.\n"
-        )
-    
+        instructions += "- Prioritize rapid hemostasis using fast-acting embolic agents (e.g., NBCA glue or Gelatin Sponge).\n"
+        instructions += "- Streamline the procedure to reduce imaging delays.\n"
+        instructions += "- Ensure immediate availability of all embolic materials and backup devices.\n"
+
     return instructions
 
-# Generate and display instructions based on the user's selections.
+# =============================================================================
+# Generate and Display Instructions
+# =============================================================================
+st.header("Embolization Instructions")
 instructions_text = get_instructions(organ, pathology, emergency)
-st.text_area("Instructions", value=instructions_text, height=400)
+st.text_area("Detailed Instructions", value=instructions_text, height=600)
